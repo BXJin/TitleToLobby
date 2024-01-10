@@ -17,6 +17,7 @@ public:
 	UGameInfoInstance(const FObjectInitializer& ObjectInitializer);
 
 public:
+	//------------------------------------------------[ Create Session ]
 	/**
 	*	Function to host a game!
 	*
@@ -54,4 +55,30 @@ public:
 	*	@param bWasSuccessful true if the async action completed without error, false if there was an error
 	*/
 	void OnStartOnlineGameComplete(FName SessionName, bool bWasSuccessful);
+
+public:
+	//------------------------------------------------[ Find Session ]
+	/**
+	*	Find an online session
+	*
+	*	@param UserId user that initiated the request
+	*	@param bIsLAN are we searching LAN matches
+	*	@param bIsPresence are we searching presence sessions
+	*/
+	void FindSessions(TSharedPtr<const FUniqueNetId> UserId, bool bIsLAN, bool bIsPresence);
+
+	/** Delegate for searching for sessions */
+	FOnFindSessionsCompleteDelegate OnFindSessionsCompleteDelegate;
+
+	/** Handle to registered delegate for searching a session */
+	FDelegateHandle OnFindSessionsCompleteDelegateHandle;
+
+	TSharedPtr<class FOnlineSessionSearch> SessionSearch;
+
+	/**
+	*	Delegate fired when a session search query has completed
+	*
+	*	@param bWasSuccessful true if the async action completed without error, false if there was an error
+	*/
+	void OnFindSessionsComplete(bool bWasSuccessful);
 };
