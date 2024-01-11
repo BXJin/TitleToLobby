@@ -24,7 +24,7 @@ struct FPlayerInfo
     TSoftObjectPtr<UTexture2D> MyPlayerCharacterImage;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    FText MyPlayerStatus;// = FText::FromString("Not Ready");
+    FText MyPlayerStatus;
 
     //UPROPERTY(BlueprintReadWrite, EditAnywhere)
     //SoftObjectPtr<UTexture2D> ImageArray[10] = { 0 ,};
