@@ -4,12 +4,30 @@
 #include "Title/CodeTitleHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "Containers/UnrealString.h"
+#include "Kismet/GameplayStatics.h"
+
+ACodeTitleHUD::ACodeTitleHUD() : PlayerSettingsSave(FString(TEXT("PlayerSettingsSave")))
+{
+}
 
 void ACodeTitleHUD::BeginPlay()
 {
 	Super::BeginPlay();
-	ShowMainMenu();
+
+	SaveGameCheck();
 }
+
+void ACodeTitleHUD::SaveGameCheck()
+{
+	if (UGameplayStatics::DoesSaveGameExist(PlayerSettingsSave, 0))
+	{
+		ShowMainMenu();
+		CreateSaveGame = true;
+	}
+	else 
+		ShowOptionsMenu();
+}
+
 
 void ACodeTitleHUD::ShowMainMenu()
 {
@@ -25,9 +43,6 @@ void ACodeTitleHUD::ShowMainMenu()
 		Player0->SetShowMouseCursor(true);
 		Player0->SetInputMode(FInputModeUIOnly());
 	}
-	FString string = FString::Printf(TEXT("%s"), MainMenu->GetName());
-	FText text = FText::FromString(string);
-	GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Green, FString::Printf(TEXT("%s"), text.ToString()));
 }
 
 void ACodeTitleHUD::ShowOptionsMenu()
@@ -38,6 +53,11 @@ void ACodeTitleHUD::ShowOptionsMenu()
 		OptionsMenu = CreateWidget<UUserWidget>(Player0, OptionsMenuWidgetClass);
 	}
 	OptionsMenu->AddToViewport();
+
+	if (IsValid(Player0))
+	{
+		Player0->SetShowMouseCursor(true);
+	}
 }
 
 void ACodeTitleHUD::ShowHostMenu()
@@ -56,3 +76,4 @@ void ACodeTitleHUD::ShowServerMenu()
 	ServerMenu = CreateWidget<UUserWidget>(Player0, ServerMenuWidgetClass);
 	ServerMenu->AddToViewport();
 }
+

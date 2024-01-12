@@ -15,6 +15,8 @@ class TITLE2LOBBY_API ACodeTitleHUD : public AHUD
 	GENERATED_BODY()
 
 public:
+	ACodeTitleHUD();
+
 	virtual void BeginPlay() override;
 
 public:
@@ -42,7 +44,13 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	UUserWidget* ServerMenu;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool CreateSaveGame;
+
 public:
+	UFUNCTION(BlueprintCallable)
+	void SaveGameCheck();
+
 	UFUNCTION(BlueprintCallable)
 	void ShowMainMenu();
 
@@ -55,4 +63,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ShowServerMenu();
 
+private:
+	FString PlayerSettingsSave;
 };

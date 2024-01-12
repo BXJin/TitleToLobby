@@ -18,7 +18,7 @@ struct FPlayerInfo
     TSoftObjectPtr<UTexture2D> MyPlayerLogo;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
-    TSoftObjectPtr<ACharacter> MyPlayerCharacter;
+    TSubclassOf<ACharacter> MyPlayerCharacter;
 
     UPROPERTY(BlueprintReadWrite, EditAnywhere)
     TSoftObjectPtr<UTexture2D> MyPlayerCharacterImage;
