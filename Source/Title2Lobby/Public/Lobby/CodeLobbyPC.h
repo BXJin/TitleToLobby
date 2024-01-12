@@ -59,7 +59,7 @@ public:
 
 	void UpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapTime);
 
-	UFUNCTION(Client, Reliable)
+	UFUNCTION(Client, Reliable, BlueprintCallable)
 	void ShowLoadingScreen();
 
 	void ShowLoadingScreen_Implementation();

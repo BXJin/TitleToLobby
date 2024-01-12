@@ -6,6 +6,10 @@
 #include "GameFramework/Character.h"
 #include "Net/UnrealNetwork.h"
 
+ACodeLobbyGameMode::ACodeLobbyGameMode() : CanWeStart(false)
+{
+}
+
 // 내부적 규칙이라 헤더파일에 선언안해도됨, Replicate변수는 반드시 해줘야함
 void ACodeLobbyGameMode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -19,5 +23,9 @@ void ACodeLobbyGameMode::SwapCharacter_Implementation(APlayerController* PlayerC
 }
 
 void ACodeLobbyGameMode::EveryOneUpdate_Implementation()
+{
+}
+
+void ACodeLobbyGameMode::LaunchTheGame()
 {
 }

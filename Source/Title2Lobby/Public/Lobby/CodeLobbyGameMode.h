@@ -15,10 +15,12 @@ class TITLE2LOBBY_API ACodeLobbyGameMode : public AGameModeBase
 	GENERATED_BODY()
 	
 public:
+	ACodeLobbyGameMode();
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
-	UFUNCTION(Server, Reliable, BlueprintCallable)
+	UFUNCTION(Server, Reliable)
 	void SwapCharacter(APlayerController* PlayerController, TSubclassOf<ACharacter> Character, bool ChangeStatus);
 
 	void SwapCharacter_Implementation(APlayerController* PlayerController, TSubclassOf<ACharacter> Character, bool ChangeStatus);
@@ -27,4 +29,15 @@ public:
 	void EveryOneUpdate();
 
 	void EveryOneUpdate_Implementation();
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void LaunchTheGame();
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+	bool CanWeStart;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<APlayerController*> AllPlayerControllers;
 };
