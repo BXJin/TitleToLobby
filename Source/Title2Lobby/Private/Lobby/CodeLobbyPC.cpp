@@ -13,6 +13,7 @@ void ACodeLobbyPC::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACodeLobbyPC, PlayerSettings);
+	DOREPLIFETIME(ACodeLobbyPC, AvailableCharaters);
 }
 
 void ACodeLobbyPC::InitSetUp_Implementation()
@@ -71,7 +72,12 @@ void ACodeLobbyPC::ShowLoadingScreen_Implementation()
 	LoadingScreen->AddToViewport();
 }
 
-void ACodeLobbyPC::UpdateNumberOfPlayers(int32 CurrentPlayers, int32 MaxPlayers)
+void ACodeLobbyPC::UpdateAvailableChacracter_Implementation(const TArray<bool>& AvailableCharater)
+{
+	AvailableCharaters = AvailableCharater;
+}
+
+void ACodeLobbyPC::UpdateNumberOfPlayers_Implementation(int32 CurrentPlayers, int32 MaxPlayers)
 {
 	if (IsValid(LobbyMenu))
 	{

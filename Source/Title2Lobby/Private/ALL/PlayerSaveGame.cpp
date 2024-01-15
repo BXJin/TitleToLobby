@@ -2,11 +2,11 @@
 
 
 #include "ALL/PlayerSaveGame.h"
-#include "Net/UnrealNetwork.h"
+//#include "Net/UnrealNetwork.h"
 
-void UPlayerSaveGame::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayerSaveGame, S_PlayerInfo);
-}
+//void UPlayerSaveGame::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//
+//	DOREPLIFETIME(UPlayerSaveGame, S_PlayerInfo);
+//}

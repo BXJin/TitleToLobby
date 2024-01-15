@@ -16,6 +16,6 @@ class TITLE2LOBBY_API UPlayerSaveGame : public USaveGame
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY(Replicated, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	FPlayerInfo S_PlayerInfo;
 };

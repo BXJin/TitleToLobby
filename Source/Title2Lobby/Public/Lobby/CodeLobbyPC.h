@@ -33,6 +33,9 @@ public:
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	FPlayerInfo PlayerSettings;
 
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	TArray<bool> AvailableCharaters;
+
 public:
 	UFUNCTION(Client, Reliable)
 	void InitSetUp();
@@ -64,8 +67,16 @@ public:
 
 	void ShowLoadingScreen_Implementation();
 
+	UFUNCTION(Client, Reliable, BlueprintCallable)
+	void UpdateAvailableChacracter(const TArray<bool>& AvailableCharater);
+
+	void UpdateAvailableChacracter_Implementation(const TArray<bool>& AvailableCharater);
+
 public:
+	UFUNCTION(Client, Reliable)
 	void UpdateNumberOfPlayers(int32 CurrentPlayers, int32 MaxPlayers);
+
+	void UpdateNumberOfPlayers_Implementation(int32 CurrentPlayers, int32 MaxPlayers);
 
 private:
 	void SaveGameCheck();
