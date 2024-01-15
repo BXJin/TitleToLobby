@@ -7,11 +7,15 @@
 #include "GameFramework/PlayerController.h"
 #include "CodeLobbyPC.generated.h"
 
+class UPlayerSaveGame;
 
 UCLASS()
 class TITLE2LOBBY_API ACodeLobbyPC : public APlayerController
 {
 	GENERATED_BODY()
+
+public:
+	ACodeLobbyPC();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -35,6 +39,9 @@ public:
 
 	UPROPERTY(Replicated, BlueprintReadWrite)
 	TArray<bool> AvailableCharaters;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ACharacter> BaseCharacter;
 
 public:
 	UFUNCTION(Client, Reliable)
@@ -83,8 +90,11 @@ private:
 	
 	void SaveGame();
 
-	void RoadGame();
+	void LoadGame();
 
 private:
 	TArray<FPlayerInfo> AllPlayersInfo;
+
+	FString PlayerSettingsSave;
+	//UPlayerSaveGame* SaveGameRef;
 };

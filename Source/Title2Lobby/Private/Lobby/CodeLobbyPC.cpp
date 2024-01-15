@@ -7,6 +7,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Lobby/CodeLobbyMenu.h"
 #include "Kismet/GameplayStatics.h"
+#include "ALL/PlayerSaveGame.h"
+
+ACodeLobbyPC::ACodeLobbyPC() : PlayerSettingsSave(FString::Printf(TEXT("PlayerSettingsSave")))
+{
+}
 
 void ACodeLobbyPC::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -58,11 +63,11 @@ void ACodeLobbyPC::AddPlayerInfo_Implementation(const TArray<FPlayerInfo>& Conne
 	
 }
 
-void ACodeLobbyPC::UpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapTime)
+void ACodeLobbyPC::UpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapDifficulty)
 {
 	LobbyMenu->MapImage = MapImage;
 	LobbyMenu->MapName = MapName;
-	LobbyMenu->MapTime = MapTime;
+	LobbyMenu->MapDifficulty = MapDifficulty;
 }
 
 void ACodeLobbyPC::ShowLoadingScreen_Implementation()
@@ -88,12 +93,28 @@ void ACodeLobbyPC::UpdateNumberOfPlayers_Implementation(int32 CurrentPlayers, in
 
 void ACodeLobbyPC::SaveGameCheck()
 {
+	if (UGameplayStatics::DoesSaveGameExist(PlayerSettingsSave, 0))
+	{
+		LoadGame();
+	}
+	SaveGame();
 }
 
 void ACodeLobbyPC::SaveGame()
 {
+	UPlayerSaveGame* SaveGameRef = Cast<UPlayerSaveGame>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveGame::StaticClass()));
+	SaveGameRef->S_PlayerInfo = PlayerSettings;
+	UGameplayStatics::SaveGameToSlot(SaveGameRef, PlayerSettingsSave, 0);
 }
 
-void ACodeLobbyPC::RoadGame()
+void ACodeLobbyPC::LoadGame()
 {
+	auto m_SaveGame = UGameplayStatics::LoadGameFromSlot(PlayerSettingsSave, 0);
+	UPlayerSaveGame* SaveGameRef = Cast<UPlayerSaveGame>(m_SaveGame);
+	if(!IsValid(SaveGameRef))
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("NoLoadSaveGame"));
+	PlayerSettings.MyPlayerName = SaveGameRef->S_PlayerInfo.MyPlayerName;
+	PlayerSettings.MyPlayerLogo = SaveGameRef->S_PlayerInfo.MyPlayerLogo;
+	//check(BaseCharacter);
+	PlayerSettings.MyPlayerCharacter = BaseCharacter;
 }

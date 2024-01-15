@@ -31,6 +31,7 @@ void ACodeLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		AllPlayerControllers.Add(NewPlayer);
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), AllRespawnPoints);
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf( TEXT("Points %d"),AllRespawnPoints.Num()));
 		UAllGameInstance* GameInstance = Cast<UAllGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 		MaxPlayers = GameInstance->MaxPlayers;
 		ServerName = GameInstance->LobbyName;
@@ -39,7 +40,7 @@ void ACodeLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 		{
 			LobbyPc->InitSetUp();
 			LobbyPc->CreateLobbyMenu(ServerName);
-			LobbyPc->UpdateLobbySettings(g_MapImage,g_MapName,g_MapTime);
+			LobbyPc->UpdateLobbySettings(g_MapImage,g_MapName,g_MapDifficulty);
 			RespawnPlayer(LobbyPc);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("RespawnPlayer"));
 		}
@@ -103,11 +104,11 @@ void ACodeLobbyGameMode::RespawnPlayer_Implementation(APlayerController* PlayerC
 	EveryOneUpdate();
 }
 
-void ACodeLobbyGameMode::ServerUpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapTime, int32 MapID)
+void ACodeLobbyGameMode::ServerUpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapDifficulty, int32 MapID)
 {
 	g_MapImage = MapImage;
 	g_MapName = MapName;
-	g_MapTime = MapTime;
+	g_MapDifficulty = MapDifficulty;
 	g_MapID = MapID;
 
 	for (auto Value : AllPlayerControllers)
@@ -115,7 +116,7 @@ void ACodeLobbyGameMode::ServerUpdateLobbySettings_Implementation(UTexture2D* Ma
 		ACodeLobbyPC* m_LobbyPC = Cast<ACodeLobbyPC>(Value);
 		if (IsValid(m_LobbyPC))
 		{
-			m_LobbyPC->UpdateLobbySettings(g_MapImage, g_MapName, g_MapTime);
+			m_LobbyPC->UpdateLobbySettings(g_MapImage, g_MapName, g_MapDifficulty);
 		}
 	}
 }

@@ -23,7 +23,7 @@ public:
 	FText MapName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LobbyMenuSettings")
-	FText MapTime;
+	FText MapDifficulty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LobbyMenuSettings")
 	UTexture2D* MapImage;

@@ -38,10 +38,10 @@ public:
 
 	void RespawnPlayer_Implementation(APlayerController* PlayerController);
 
-	UFUNCTION(Server, Reliable)
-	void ServerUpdateLobbySettings(UTexture2D* MapImage, const FText& MapName, const FText& MapTime, int32 MapID);
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void ServerUpdateLobbySettings(UTexture2D* MapImage, const FText& MapName, const FText& MapDifficulty, int32 MapID);
 
-	void ServerUpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapTime, int32 MapID);
+	void ServerUpdateLobbySettings_Implementation(UTexture2D* MapImage, const FText& MapName, const FText& MapDifficulty, int32 MapID);
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -64,7 +64,7 @@ public:
 	FText g_MapName;
 
 	UPROPERTY(EditAnywhere)
-	FText g_MapTime;
+	FText g_MapDifficulty;
 
 	int32 g_MapID;
 
@@ -80,4 +80,5 @@ public:
 	TSubclassOf<ACharacter> BaseCharacter;
 
 	TArray<FPlayerInfo> ConnectedPlayerInfo;
+
 };  
