@@ -32,7 +32,7 @@ void ACodeLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 	{
 		AllPlayerControllers.Add(NewPlayer);
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerStart::StaticClass(), AllRespawnPoints);
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf( TEXT("Points %d"),AllRespawnPoints.Num()));
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf( TEXT("Points %d"),AllRespawnPoints.Num()));
 		UAllGameInstance* GameInstance = Cast<UAllGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 		MaxPlayers = GameInstance->MaxPlayers;
 		ServerName = GameInstance->LobbyName;
@@ -60,9 +60,9 @@ void ACodeLobbyGameMode::Logout(AController* Exiting)
 		{
 			AvailableCharacters[LobbyPc->SelectedCharacterNum] = true;
 			AllPlayerControllers.RemoveAt(m_Index);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PCs %d"), AllPlayerControllers.Num()));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PCs %d"), AllPlayerControllers.Num()));
 			ConnectedPlayerInfo.RemoveAt(m_Index);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PIs %d"), ConnectedPlayerInfo.Num()));
+			//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PIs %d"), ConnectedPlayerInfo.Num()));
 			//UKismetArrayLibrary::Array_Remove();
 			//Ukis
 			EveryOneUpdate();
@@ -100,7 +100,7 @@ void ACodeLobbyGameMode::EveryOneUpdate_Implementation()
 			if (IsValid(m_LobbyPC))
 			{
 				ConnectedPlayerInfo.Add(m_LobbyPC->PlayerSettings);
-				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("EveryoneUp %d"), AllPlayerControllers.Num()));
+				//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("EveryoneUp %d"), AllPlayerControllers.Num()));
 				m_LobbyPC->UpdateNumberOfPlayers(AllPlayerControllers.Num(), MaxPlayers);
 			}
 		}
