@@ -13,6 +13,7 @@
 
 ACodeLobbyGameMode::ACodeLobbyGameMode() : CanWeStart(false)
 {
+	AvailableCharacters.SetNum(9, false);
 }
 
 // 내부적 규칙이라 헤더파일에 선언안해도됨, Replicate변수는 반드시 해줘야함
@@ -41,19 +42,55 @@ void ACodeLobbyGameMode::PostLogin(APlayerController* NewPlayer)
 			LobbyPc->InitSetUp();
 			LobbyPc->CreateLobbyMenu(ServerName);
 			LobbyPc->UpdateLobbySettings(g_MapImage,g_MapName,g_MapDifficulty);
-			RespawnPlayer(LobbyPc);
+			//RespawnPlayer(LobbyPc);
+			LobbyPc->UpdateNumberOfPlayers(AllPlayerControllers.Num(), MaxPlayers);
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("RespawnPlayer"));
 		}
 	}
 }
 
+void ACodeLobbyGameMode::Logout(AController* Exiting)
+{
+	int32 m_Index;
+	APlayerController* PC = Cast<APlayerController>(Exiting);
+	if (AllPlayerControllers.Find(PC, m_Index))
+	{
+		ACodeLobbyPC* LobbyPc = Cast<ACodeLobbyPC>(PC);
+		if (IsValid(LobbyPc))
+		{
+			AvailableCharacters[LobbyPc->SelectedCharacterNum] = true;
+			AllPlayerControllers.RemoveAt(m_Index);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PCs %d"), AllPlayerControllers.Num()));
+			ConnectedPlayerInfo.RemoveAt(m_Index);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, FString::Printf(TEXT("PIs %d"), ConnectedPlayerInfo.Num()));
+			//UKismetArrayLibrary::Array_Remove();
+			//Ukis
+			EveryOneUpdate();
+		}
+	}
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("Logout"));
+}
+
 
 void ACodeLobbyGameMode::SwapCharacter_Implementation(APlayerController* PlayerController, TSubclassOf<ACharacter> Character, bool ChangeStatus)
 {
+	if (!ChangeStatus)
+	{
+		if (IsValid(PlayerController->GetPawn()))
+		{
+			GetWorld()->DestroyActor(PlayerController->GetPawn());
+		}
+		auto RandomIndex = FMath::RandRange(0, AllRespawnPoints.Num() - 1);
+		ACharacter* NewChar = GetWorld()->SpawnActor<ACharacter>(Character, AllRespawnPoints[RandomIndex]->GetActorTransform());
+		PlayerController->Possess(NewChar);
+//		EveryOneUpdate();		
+	}
 }
 
 void ACodeLobbyGameMode::EveryOneUpdate_Implementation()
 {
+	FTimerHandle TimerHandle;
+
 	if (AllPlayerControllers.Num() > 0)
 	{
 		ConnectedPlayerInfo.Empty();
@@ -63,31 +100,36 @@ void ACodeLobbyGameMode::EveryOneUpdate_Implementation()
 			if (IsValid(m_LobbyPC))
 			{
 				ConnectedPlayerInfo.Add(m_LobbyPC->PlayerSettings);
+				GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, FString::Printf(TEXT("EveryoneUp %d"), AllPlayerControllers.Num()));
 				m_LobbyPC->UpdateNumberOfPlayers(AllPlayerControllers.Num(), MaxPlayers);
 			}
 		}
-		for (auto Value : AllPlayerControllers)
-		{
-			ACodeLobbyPC* m_LobbyPC = Cast<ACodeLobbyPC>(Value);
-			if (IsValid(m_LobbyPC))
+
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
 			{
-				m_LobbyPC->AddPlayerInfo(ConnectedPlayerInfo);
-				m_LobbyPC->UpdateAvailableChacracter(AvailableCharacters);
-			}
-		}
-		for (auto Value : ConnectedPlayerInfo)
-		{		
-			if ( (Value.MyPlayerStatus.EqualToCaseIgnored(FText::FromString("Not Ready"))) 
-				|| (Value.MyPlayerCharacter == BaseCharacter) )
-			{
-				CanWeStart = false;
-				break;
-			}
-			else
-			{
-				CanWeStart = true;
-			}
-		}
+				for (auto Value : AllPlayerControllers)
+				{
+					ACodeLobbyPC* m_LobbyPC = Cast<ACodeLobbyPC>(Value);
+					if (IsValid(m_LobbyPC))
+					{
+						m_LobbyPC->AddPlayerInfo(ConnectedPlayerInfo);
+						m_LobbyPC->UpdateAvailableChacracter(AvailableCharacters);
+					}
+				}
+				for (auto Value : ConnectedPlayerInfo)
+				{
+					if ((Value.MyPlayerStatus.EqualToCaseIgnored(FText::FromString("Not Ready")))
+						|| (Value.MyPlayerCharacter == BaseCharacter))
+					{
+						CanWeStart = false;
+						break;
+					}
+					else
+					{
+						CanWeStart = true;
+					}
+				}
+			}, 0.01f, false);
 	}
 }
 

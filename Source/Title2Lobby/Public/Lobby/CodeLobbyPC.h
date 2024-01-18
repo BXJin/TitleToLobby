@@ -43,6 +43,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ACharacter> BaseCharacter;
 
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int32 SelectedCharacterNum;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	int32 PrevSelectedCharacterNum;
+
+	UPROPERTY(Replicated, BlueprintReadWrite)
+	UTexture2D* MyCharacterImage;
+
 public:
 	UFUNCTION(Client, Reliable)
 	void InitSetUp();
@@ -79,6 +88,21 @@ public:
 
 	void UpdateAvailableChacracter_Implementation(const TArray<bool>& AvailableCharater);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void UpdateAvailableChacracterInBluePrint(const TArray<bool>& AvailableCharater);
+
+	void UpdateAvailableChacracterInBluePrint_Implementation(const TArray<bool>& AvailableCharater);
+
+	UFUNCTION(Server, Reliable, BlueprintCallable)
+	void AssignSelectedCharacter(int32 CharacterID, UTexture2D* CharacterImage);
+
+	void AssignSelectedCharacter_Implementation(int32 CharacterID, UTexture2D* CharacterImage);
+
+	UFUNCTION(Client, Reliable)
+	void AssignCharToPlayer(TSubclassOf<ACharacter> Change2ThisCharacter, UTexture2D* CharacterImage);
+
+	void AssignCharToPlayer_Implementation(TSubclassOf<ACharacter> Change2ThisCharacter, UTexture2D* CharacterImage);
+
 public:
 	UFUNCTION(Client, Reliable)
 	void UpdateNumberOfPlayers(int32 CurrentPlayers, int32 MaxPlayers);
@@ -91,6 +115,8 @@ private:
 	void SaveGame();
 
 	void LoadGame();
+
+	void CheckCharacter();
 
 private:
 	TArray<FPlayerInfo> AllPlayersInfo;

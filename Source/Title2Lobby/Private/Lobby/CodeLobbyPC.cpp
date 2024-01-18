@@ -8,6 +8,7 @@
 #include "Lobby/CodeLobbyMenu.h"
 #include "Kismet/GameplayStatics.h"
 #include "ALL/PlayerSaveGame.h"
+#include "ALL/AllGameInstance.h"
 
 ACodeLobbyPC::ACodeLobbyPC() : PlayerSettingsSave(FString::Printf(TEXT("PlayerSettingsSave")))
 {
@@ -19,6 +20,9 @@ void ACodeLobbyPC::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 
 	DOREPLIFETIME(ACodeLobbyPC, PlayerSettings);
 	DOREPLIFETIME(ACodeLobbyPC, AvailableCharaters);
+	DOREPLIFETIME(ACodeLobbyPC, SelectedCharacterNum);
+	DOREPLIFETIME(ACodeLobbyPC, PrevSelectedCharacterNum);
+	DOREPLIFETIME(ACodeLobbyPC, MyCharacterImage);
 }
 
 void ACodeLobbyPC::InitSetUp_Implementation()
@@ -79,7 +83,27 @@ void ACodeLobbyPC::ShowLoadingScreen_Implementation()
 
 void ACodeLobbyPC::UpdateAvailableChacracter_Implementation(const TArray<bool>& AvailableCharater)
 {
-	AvailableCharaters = AvailableCharater;
+	UpdateAvailableChacracterInBluePrint(AvailableCharater);
+}
+
+void ACodeLobbyPC::UpdateAvailableChacracterInBluePrint_Implementation(const TArray<bool>& AvailableCharater)
+{
+}
+
+void ACodeLobbyPC::AssignSelectedCharacter_Implementation(int32 CharacterID, UTexture2D* CharacterImage)
+{
+	PrevSelectedCharacterNum = SelectedCharacterNum;
+	MyCharacterImage = CharacterImage;
+	SelectedCharacterNum = CharacterID;
+	CheckCharacter();
+}
+
+void ACodeLobbyPC::AssignCharToPlayer_Implementation(TSubclassOf<ACharacter> Change2ThisCharacter, UTexture2D* CharacterImage)
+{
+	PlayerSettings.MyPlayerCharacterImage = CharacterImage;
+	PlayerSettings.MyPlayerCharacter = Change2ThisCharacter;
+	SaveGame();
+	CallUpdate(PlayerSettings, false);
 }
 
 void ACodeLobbyPC::UpdateNumberOfPlayers_Implementation(int32 CurrentPlayers, int32 MaxPlayers)
@@ -117,4 +141,23 @@ void ACodeLobbyPC::LoadGame()
 	PlayerSettings.MyPlayerLogo = SaveGameRef->S_PlayerInfo.MyPlayerLogo;
 	//check(BaseCharacter);
 	PlayerSettings.MyPlayerCharacter = BaseCharacter;
+}
+
+void ACodeLobbyPC::CheckCharacter()
+{
+	ACodeLobbyGameMode* m_LobbyGM = Cast< ACodeLobbyGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (!IsValid(m_LobbyGM))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("No m_LobbyGM"));
+		return;
+	}
+	if (SelectedCharacterNum != 0)
+	{
+		if (m_LobbyGM->AvailableCharacters[SelectedCharacterNum] == false)
+		{
+			m_LobbyGM->AvailableCharacters[SelectedCharacterNum] = true;
+		}
+	}
+	m_LobbyGM->AvailableCharacters[PrevSelectedCharacterNum] = false;
+	AssignCharToPlayer(m_LobbyGM->AllCharacters[SelectedCharacterNum], MyCharacterImage);
 }

@@ -22,8 +22,10 @@ public:
 
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	virtual void Logout(AController* Exiting) override;
+
 public:
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void SwapCharacter(APlayerController* PlayerController, TSubclassOf<ACharacter> Character, bool ChangeStatus);
 
 	void SwapCharacter_Implementation(APlayerController* PlayerController, TSubclassOf<ACharacter> Character, bool ChangeStatus);
@@ -57,6 +59,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	int32 MaxPlayers;
 
+private:
 	UPROPERTY(EditAnywhere)
 	UTexture2D* g_MapImage;
 
@@ -68,6 +71,7 @@ public:
 
 	int32 g_MapID;
 
+public:
 	TArray<bool> AvailableCharacters;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -81,4 +85,6 @@ public:
 
 	TArray<FPlayerInfo> ConnectedPlayerInfo;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<ACharacter>> AllCharacters;
 };  
